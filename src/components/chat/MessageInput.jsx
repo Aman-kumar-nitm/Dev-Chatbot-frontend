@@ -6,6 +6,8 @@ const MessageInput = ({ onSendMessage, disabled, isSending }) => {
   const [message, setMessage] = useState('');
   const [rows, setRows] = useState(1);
   const textareaRef = useRef(null);
+const [listening, setListening] = useState(false);
+const recognitionRef = useRef(null);
 
   const maxLength = 500;
   const charCount = message.length;
@@ -47,6 +49,41 @@ const MessageInput = ({ onSendMessage, disabled, isSending }) => {
       setMessage(value);
     }
   };
+  const startListening = () => {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Speech recognition not supported in this browser");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-US";
+  recognition.continuous = false;
+  recognition.interimResults = true;
+
+  recognition.onresult = (event) => {
+    let transcript = "";
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      transcript += event.results[i][0].transcript;
+    }
+    setMessage(transcript);
+  };
+
+  recognition.onend = () => {
+    setListening(false);
+  };
+
+  recognition.start();
+  recognitionRef.current = recognition;
+  setListening(true);
+};
+
+const stopListening = () => {
+  recognitionRef.current?.stop();
+  setListening(false);
+};
 
   return (
     <div className="space-y-2">
@@ -65,21 +102,37 @@ const MessageInput = ({ onSendMessage, disabled, isSending }) => {
         />
         
         <div className="absolute right-3 bottom-3 flex items-center gap-2">
-          
-            <button
-              onClick={handleSend}
-              disabled={!message.trim() || disabled || isSending}
-              className={`p-2 rounded-lg transition-all ${
-                message.trim() && !disabled
-                  ? 'bg-primary-600 hover:bg-primary-700 text-white'
-                  : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-              }`}
-              title="Send message"
-            >
-              <FiSend size={18} />
-            </button>
-          
-        </div>
+
+  {/* 🎤 Mic Button */}
+  <button
+    onClick={listening ? stopListening : startListening}
+    disabled={disabled || isSending}
+    className={`p-2 rounded-lg transition-all ${
+      listening
+        ? 'bg-red-600 text-white animate-pulse'
+        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+    }`}
+    title="Voice input"
+  >
+    🎤
+  </button>
+
+  {/* 📤 Send Button */}
+  <button
+    onClick={handleSend}
+    disabled={!message.trim() || disabled || isSending}
+    className={`p-2 rounded-lg transition-all ${
+      message.trim() && !disabled
+        ? 'bg-primary-600 hover:bg-primary-700 text-white'
+        : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+    }`}
+    title="Send message"
+  >
+    <FiSend size={18} />
+  </button>
+
+</div>
+
       </div>
 
       {/* Character counter and info */}

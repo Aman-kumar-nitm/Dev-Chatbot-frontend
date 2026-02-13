@@ -4,9 +4,9 @@ import { FaCrown } from 'react-icons/fa';
 import { useAuth } from '../../hooks/useAuth';
 import Button from '../common/Button';
 import { chatApi } from '../../api/chatApi';
-
+import api from '../../api/axios'
 const Sidebar = ({ onSelectChat, currentChatId }) => {
-  const { user, logout } = useAuth();
+  const { user, logout,checkAuth } = useAuth();
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -62,6 +62,33 @@ const Sidebar = ({ onSelectChat, currentChatId }) => {
     logout();
   };
 
+  const handleUpgrade = async () => {
+  const { data } = await api.post("/payment/create-order");
+
+
+  const options = {
+    key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+    amount: data.amount,
+    currency: data.currency,
+    order_id: data.id,
+    name: "Dev-Chatbot Pro",
+     method: {
+    upi: true,
+    card: true,
+    netbanking: true,
+    wallet: true,
+  },
+    handler: async () => {
+  alert("Payment successful! Activating Dev-Pro...");
+  setTimeout(async () => {
+    await checkAuth(); // wait for webhook
+  }, 3000);
+},
+
+  };
+
+  new window.Razorpay(options).open();
+};
   return (
     <>
       {/* Mobile Toggle Button */}
@@ -149,7 +176,8 @@ const Sidebar = ({ onSelectChat, currentChatId }) => {
             <Button
               variant="outline"
               className="w-full flex items-center justify-center gap-2"
-              disabled={user?.role === 'premium'}
+              disabled={user?.role === 'Dev-Pro'}
+              onClick={handleUpgrade}
             >
               <FaCrown className="text-yellow-400" />
               {user?.role === 'Dev-Pro' ? 'Pro Plan Active' : 'Upgrade to Dev-Pro'}

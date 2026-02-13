@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { FiPlus, FiTrash2, FiLogOut, FiUser, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FaCrown } from 'react-icons/fa';
 import { useAuth } from '../../hooks/useAuth';
 
 const Header = () => {
@@ -19,8 +21,17 @@ const Header = () => {
         </div>
         
         <div className="flex items-center space-x-6">
+
+
           {/* Token Meter */}
-          <div className="hidden md:block">
+
+          {user?.role === 'Dev-Pro' ? (
+    /* DEV-PRO → Crown Badge */
+    <div className="flex items-center space-x-2 text-yellow-400">
+      <FaCrown />
+      <span className="text-sm font-medium">Pro Plan Active</span>
+    </div>
+  )  :(<div className="hidden md:block">
             <div className="flex items-center space-x-3">
               <div className="text-right">
                 <div className="text-sm font-medium text-gray-300">
@@ -42,7 +53,8 @@ const Header = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div>) }
+          
           
           {/* User Info */}
           <div className="flex items-center space-x-3">

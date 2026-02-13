@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiUser, FiCpu, FiCopy, FiCheck } from 'react-icons/fi';
+import { FiUser, FiCpu, FiCopy, FiCheck ,FiVolume2, FiStopCircle} from 'react-icons/fi';
 
 const MessageBubble = ({ message, isUser, isError = false }) => {
   const [copied, setCopied] = useState(false);
@@ -16,6 +16,29 @@ const MessageBubble = ({ message, isUser, isError = false }) => {
       minute: '2-digit' 
     });
   };
+
+  const [speaking, setSpeaking] = useState(false);
+
+const handleSpeak = () => {
+  if (!message.content) return;
+
+  // Stop any ongoing speech
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(message.content);
+
+  utterance.onstart = () => setSpeaking(true);
+  utterance.onend = () => setSpeaking(false);
+  utterance.onerror = () => setSpeaking(false);
+
+  window.speechSynthesis.speak(utterance);
+};
+
+const handleStop = () => {
+  window.speechSynthesis.cancel();
+  setSpeaking(false);
+};
+
 
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
@@ -47,18 +70,35 @@ const MessageBubble = ({ message, isUser, isError = false }) => {
             {formatTime(message.createdAt)}
           </span>
           {!isUser && !isError && (
-            <button
-              onClick={handleCopy}
-              className="ml-2 p-1 hover:bg-gray-700 rounded transition-colors"
-              title="Copy to clipboard"
-            >
-              {copied ? (
-                <FiCheck className="text-green-400" size={14} />
-              ) : (
-                <FiCopy className="text-gray-400" size={14} />
-              )}
-            </button>
-          )}
+  <>
+    {/* Speak Button */}
+    <button
+      onClick={speaking ? handleStop : handleSpeak}
+      className="ml-2 p-1 hover:bg-gray-700 rounded transition-colors"
+      title={speaking ? "Stop reading" : "Read aloud"}
+    >
+      {speaking ? (
+        <FiStopCircle className="text-red-400" size={14} />
+      ) : (
+        <FiVolume2 className="text-gray-400" size={14} />
+      )}
+    </button>
+
+    {/* Copy Button */}
+    <button
+      onClick={handleCopy}
+      className="ml-2 p-1 hover:bg-gray-700 rounded transition-colors"
+      title="Copy to clipboard"
+    >
+      {copied ? (
+        <FiCheck className="text-green-400" size={14} />
+      ) : (
+        <FiCopy className="text-gray-400" size={14} />
+      )}
+    </button>
+  </>
+)}
+
         </div>
 
         {/* Content */}
