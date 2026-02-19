@@ -16,7 +16,7 @@ import ResetPassword from '../pages/auth/ResetPassword';
 import ChatPage from '../pages/app/ChatPage';
 
 const AppRoutes = () => {
-  const { loading } = useAuth();
+  const { loading,user } = useAuth();
 
   if (loading) {
     return <Loader fullScreen />;
@@ -25,11 +25,11 @@ const AppRoutes = () => {
   return (
     <Routes>
   {/* Public */}
-  <Route path="/login" element={<Login />} />
-  <Route path="/register" element={<Register />} />
-  <Route path="/verify-otp" element={<VerifyOtp />} />
-  <Route path="/forgot-password" element={<ForgotPassword />} />
-  <Route path="/reset-password" element={<ResetPassword />} />
+  <Route path="/login" element={!user ? <Login /> : <Navigate to="/app" />} />
+  <Route path="/register" element={!user ? <Register /> : <Navigate to="/app"/>} />
+  <Route path="/verify-otp" element={!user ? <VerifyOtp /> : <Navigate to="/app"/>} />
+  <Route path="/forgot-password" element={!user ? <ForgotPassword />:<Navigate to="/app"/>} />
+  <Route path="/reset-password" element={!user ? <ResetPassword /> :<Navigate to="/app"/>} />
 
   {/* Protected */}
   <Route element={<ProtectedRoute />}>

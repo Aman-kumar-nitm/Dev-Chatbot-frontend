@@ -21,7 +21,7 @@ const ForgotPassword = () => {
     setLoading(true);
 
     try {
-      await authApi.forgotPassword(email);
+      await authApi.forgotPassword(email.trim());
       navigate('/reset-password', {
       state: { email }
     });
@@ -65,7 +65,10 @@ const ForgotPassword = () => {
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                 onChange={(e) => {
+  setEmail(e.target.value);
+  setError('');
+}}
                   required
                   className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg 
                            focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
@@ -79,7 +82,8 @@ const ForgotPassword = () => {
           <Button
             type="submit"
             className="w-full py-3"
-            disabled={loading}
+            disabled={loading || !email}
+
           >
             {loading ? <Loader size="sm" /> : 'Send Reset Instructions'}
           </Button>

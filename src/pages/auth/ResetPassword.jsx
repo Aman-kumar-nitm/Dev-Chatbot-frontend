@@ -99,7 +99,13 @@ const ResetPassword = () => {
             required
           />
 
-          <Button className="w-full" disabled={loading} type="submit">
+          <Button className="w-full" disabled={
+  loading ||
+  !otp ||
+  !password ||
+  !confirmPassword
+}
+ type="submit">
             {loading ? <Loader size="sm" /> : 'Reset Password'}
           </Button>
         </form>

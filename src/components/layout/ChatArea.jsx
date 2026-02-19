@@ -43,6 +43,7 @@ const ChatArea = ({ chatId, onNewChat }) => {
 
   const handleSendMessage = async (content) => {
     if (!chatId || sending) return;
+    if (!content.trim()) return;
 
     setSending(true);
     
@@ -89,7 +90,9 @@ setMessages(prev => [...prev, aiMessage]);
         isError: true,
         createdAt: new Date().toISOString(),
       };
-      setMessages(prev => [...prev, errorMessage]);
+     setMessages(prev => [...prev, errorMessage]);
+
+
     } finally {
       setSending(false);
     }

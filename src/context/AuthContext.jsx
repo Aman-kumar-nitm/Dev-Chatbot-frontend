@@ -1,10 +1,17 @@
 
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect , useMemo } from 'react';
 import { authApi } from '../api/authApi';
 
 export const AuthContext = createContext({});
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used inside AuthProvider");
+  }
+  return context;
+};
+
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -63,18 +70,19 @@ export const AuthProvider = ({ children }) => {
     setTokenBalance(newBalance);
   };
 
-  const value = {
-    user,
-    tokenBalance,
-    loading,
-    setUser,
-    login,
-    register,
-    verifyOtp,
-    logout,
-    updateTokenBalance,
-    checkAuth
-  };
+  const value = useMemo(() => ({
+  user,
+  tokenBalance,
+  loading,
+  setUser,
+  login,
+  register,
+  verifyOtp,
+  logout,
+  updateTokenBalance,
+  checkAuth
+}), [user, tokenBalance, loading]);
+
 
   return (
     <AuthContext.Provider value={value}>

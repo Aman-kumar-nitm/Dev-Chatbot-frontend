@@ -22,7 +22,11 @@ const Login = () => {
     setLoading(true);
 
     try {
-      await login({ email, password });
+      await login({
+  email: email.trim(),
+  password: password.trim(),
+});
+
       navigate('/app');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
@@ -58,7 +62,10 @@ const Login = () => {
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+  setEmail(e.target.value);
+  setError('');
+}}
                   required
                   className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg 
                            focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
@@ -77,7 +84,10 @@ const Login = () => {
                 <input
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+  setPassword(e.target.value);
+  setError('');
+}}
                   required
                   className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg 
                            focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
@@ -100,7 +110,8 @@ const Login = () => {
           <Button
             type="submit"
             className="w-full py-3"
-            disabled={loading}
+            disabled={loading || !email || !password}
+
           >
             {loading ? <Loader size="sm" /> : 'Sign In'}
           </Button>

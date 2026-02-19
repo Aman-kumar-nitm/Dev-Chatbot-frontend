@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { FiUser, FiCpu, FiCopy, FiCheck ,FiVolume2, FiStopCircle} from 'react-icons/fi';
+import ReactMarkdown from "react-markdown";
 
+import markdownComponents from './MarkDownComponenets';
 const MessageBubble = ({ message, isUser, isError = false }) => {
   const [copied, setCopied] = useState(false);
 
@@ -102,11 +104,62 @@ const handleStop = () => {
         </div>
 
         {/* Content */}
-        <div className="prose prose-invert max-w-none">
-          <div className={`whitespace-pre-wrap ${isError ? 'text-red-300' : 'text-gray-200'}`}>
-            {message.content}
-          </div>
-        </div>
+     {/* <div
+  className={`prose prose-invert max-w-none ${
+    isError ? 'text-red-300' : 'text-gray-200'
+  }`}
+>
+  <ReactMarkdown
+    components={{
+      pre({ children }) {
+        return <>{children}</>;   // 🔥 prevents <div> inside <p> hydration error
+      },
+
+      code({ inline, className, children }) {
+        const match = /language-(\w+)/.exec(className || "");
+
+        if (!inline) {
+          return (
+            <SyntaxHighlighter
+              style={vscDarkPlus}
+              language={match?.[1] || "javascript"}
+              PreTag="div"
+            >
+              {String(children).replace(/\n$/, "")}
+            </SyntaxHighlighter>
+          );
+        }
+
+        return (
+          <code className="bg-gray-800 px-1 rounded">
+            {children}
+          </code>
+        );
+      },
+
+      p({ children }) {
+        return <p className="mb-2">{children}</p>;
+      }
+    }}
+  >
+    {message.content}
+  </ReactMarkdown>
+</div> */}
+
+
+
+<div
+  className={`prose prose-invert max-w-none ${
+    isError ? 'text-red-300' : 'text-gray-200'
+  }`}
+>
+  <ReactMarkdown components={markdownComponents}>
+    {message.content}
+  </ReactMarkdown>
+</div>
+
+        
+
 
         {/* Error indicator */}
         {isError && (

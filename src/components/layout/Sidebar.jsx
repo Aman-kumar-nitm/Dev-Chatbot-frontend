@@ -20,6 +20,7 @@ const Sidebar = ({ onSelectChat, currentChatId }) => {
       const response = await chatApi.getChats();
       setChats(response.data);
     } catch (error) {
+      setChats([])
       console.error('Failed to fetch chats:', error);
     } finally {
       setLoading(false);
@@ -62,33 +63,49 @@ const Sidebar = ({ onSelectChat, currentChatId }) => {
     logout();
   };
 
-  const handleUpgrade = async () => {
-  const { data } = await api.post("/payment/create-order");
+const [upgrading, setUpgrading] = useState(false);
 
+const handleUpgrade = async () => {
+  try {
+    setUpgrading(true);
 
-  const options = {
-    key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-    amount: data.amount,
-    currency: data.currency,
-    order_id: data.id,
-    name: "Dev-Chatbot Pro",
-     method: {
-    upi: true,
-    card: true,
-    netbanking: true,
-    wallet: true,
-  },
-    handler: async () => {
-  alert("Payment successful! Activating Dev-Pro...");
-  setTimeout(async () => {
-    await checkAuth(); // wait for webhook
-  }, 3000);
-},
+    const { data } = await api.post("/payment/create-order");
 
-  };
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: data.amount,
+      currency: data.currency,
+      order_id: data.id,
+      name: "Dev-Chatbot Pro",
 
-  new window.Razorpay(options).open();
+      method: {
+        upi: true,
+        card: true,
+        netbanking: true,
+        wallet: true,
+      },
+
+      handler: async () => {
+        // show UI feedback instead of alert
+        console.log("Payment successful, activating plan...");
+
+        // wait for webhook → then refresh auth
+        setTimeout(async () => {
+          await checkAuth();
+          setUpgrading(false);
+        }, 3000);
+      },
+    };
+
+    new window.Razorpay(options).open();
+
+  } catch (err) {
+    console.error("Upgrade failed:", err);
+    alert("Failed to start payment. Please try again.");
+    setUpgrading(false);
+  }
 };
+
   return (
     <>
       {/* Mobile Toggle Button */}
@@ -176,7 +193,7 @@ const Sidebar = ({ onSelectChat, currentChatId }) => {
             <Button
               variant="outline"
               className="w-full flex items-center justify-center gap-2"
-              disabled={user?.role === 'Dev-Pro'}
+              disabled={user?.role === 'Dev-Pro' || upgrading}
               onClick={handleUpgrade}
             >
               <FaCrown className="text-yellow-400" />

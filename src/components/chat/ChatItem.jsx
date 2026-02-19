@@ -4,7 +4,10 @@ import { FiTrash2, FiMessageSquare } from 'react-icons/fi';
 const ChatItem = ({ chat, isActive, onSelect, onDelete }) => {
   return (
     <div
-      onClick={onSelect}
+      role="button"
+tabIndex={0}
+onKeyDown={(e) => e.key === 'Enter' && onSelect()}
+
       className={`
         group flex items-center justify-between p-3 rounded-lg cursor-pointer
         transition-all duration-200 hover:bg-gray-800

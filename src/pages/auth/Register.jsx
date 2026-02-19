@@ -44,10 +44,10 @@ const Register = () => {
 
     try {
       await register({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-      });
+  name: formData.name.trim(),
+  email: formData.email.trim(),
+  password: formData.password.trim(),
+});
       navigate('/verify-otp', { state: { email: formData.email } });
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
@@ -158,7 +158,14 @@ const Register = () => {
           <Button
             type="submit"
             className="w-full py-3"
-            disabled={loading}
+            disabled={
+  loading ||
+  !formData.name ||
+  !formData.email ||
+  !formData.password ||
+  !formData.confirmPassword
+}
+
           >
             {loading ? <Loader size="sm" /> : 'Create Account'}
           </Button>

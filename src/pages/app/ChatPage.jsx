@@ -1,8 +1,12 @@
-import React from 'react';
-import AppLayout from '../../components/layout/Applayout';
+import React, { Suspense } from 'react';
+
+const AppLayout = React.lazy(() => import('../../components/layout/Applayout'));
 
 const ChatPage = () => {
-  return <AppLayout />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AppLayout />
+    </Suspense>
+  );
 };
-
 export default ChatPage;

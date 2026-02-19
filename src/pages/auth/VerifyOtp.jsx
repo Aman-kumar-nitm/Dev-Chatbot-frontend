@@ -99,7 +99,8 @@ const VerifyOtp = () => {
           <Button
             type="submit"
             className="w-full py-3 flex items-center justify-center gap-2"
-            disabled={loading}
+            disabled={loading || otp.join('').length !== 6}
+
           >
             {loading ? <Loader size="sm" /> : (
               <>

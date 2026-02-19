@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect ,useMemo} from 'react';
 import { FiPlus, FiTrash2, FiLogOut, FiUser, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { FaCrown } from 'react-icons/fa';
 import { useAuth } from '../../hooks/useAuth';
@@ -8,7 +8,11 @@ const Header = () => {
   
   // Calculate percentage for progress bar (assuming 1000 tokens max)
   const maxTokens = user?.role === 'Dev-Pro' ? 1000 : 1000;
-  const percentage = Math.min((tokenBalance / maxTokens) * 100, 100);
+ const percentage = useMemo(() => {
+  if (!maxTokens) return 0;
+  return Math.min((tokenBalance / maxTokens) * 100, 100);
+}, [tokenBalance, maxTokens]);
+
   
   return (
     <header className="sticky top-0 z-40 glassmorphism p-4 border-b border-gray-800">

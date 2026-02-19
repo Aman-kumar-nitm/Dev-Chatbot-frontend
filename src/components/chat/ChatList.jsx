@@ -4,7 +4,7 @@ import ChatItem from './ChatItem';
 const ChatList = ({ chats, onSelectChat, onDeleteChat, currentChatId }) => {
   return (
     <div className="space-y-1">
-      {chats.map((chat) => (
+      {chats?.map((chat) => (
         <ChatItem
           key={chat._id}
           chat={chat}

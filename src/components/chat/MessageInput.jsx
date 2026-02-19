@@ -16,6 +16,10 @@ const recognitionRef = useRef(null);
     adjustHeight();
   }, [message]);
 
+  useEffect(() => {
+  return () => recognitionRef.current?.stop();
+}, []);
+
   const adjustHeight = () => {
     const textarea = textareaRef.current;
     if (!textarea) return;
